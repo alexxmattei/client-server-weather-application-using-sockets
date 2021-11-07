@@ -22,3 +22,16 @@ An ADMIN can:
 
 The Client uses an AuthManager that is thread safe to log in and send stateful data to the Server. 
 The Server allocates a new Thread for each client with keeping a record of each client's state and request. 
+
+Dependencies: 
+
+GSON for parsing json and saving data in the persistance layer 
+>> pom.xml 
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.9</version>
+        </dependency>
+    </dependencies>
