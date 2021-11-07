@@ -3,12 +3,11 @@ package Utils.Menus;
 public class AuthMenu {
 
     private static AuthMenu authMenuInstance = null;
-    public static AuthMenu getInstance() {
 
-        if(authMenuInstance == null) {
+    public static AuthMenu getInstance() {
+        if (authMenuInstance == null) {
             authMenuInstance = new AuthMenu();
         }
-
         return authMenuInstance;
     }
 

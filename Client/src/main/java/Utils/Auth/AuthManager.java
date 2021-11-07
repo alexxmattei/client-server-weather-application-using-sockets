@@ -9,7 +9,7 @@ public class AuthManager {
     private static AuthManager authManagerInstance = null;
 
     public static AuthManager getInstance() {
-        if(authManagerInstance == null) {
+        if (authManagerInstance == null) {
             authManagerInstance = new AuthManager();
         }
         return authManagerInstance;

@@ -37,8 +37,6 @@ public class Client {
             if (this.role.toString().equals("NONE")) {
                 System.out.println("Please make sure that the role you have chosen matches the options above!");
             } else {
-                System.out.println("You are now logged in as: " + this.role.toString());
-
                 if (this.role == Session.CLIENT) {
                     System.out.println("1. To get a weather in a city type 'weather'");
                     System.out.println("2. To log out please type 'logout'");
@@ -68,7 +66,10 @@ public class Client {
             // continue to send requests as long as the server runs and the client socket is connected
             while (socket.isConnected()) {
                 String request = scanner.nextLine();
-                switch (request) {
+                switch (request.toLowerCase()) {
+                    case "weather":
+                        System.out.println("To make a request for weather please type in the coordinates");
+                        break;
                     case "logout":
                         AuthManager.getInstance().setUserCredentials(Session.NONE);
                         System.out.println("Logged out!");
@@ -79,7 +80,15 @@ public class Client {
                         closeEverything(socket, bufferedReader, bufferedWriter);
                         break;
                     default:
-                        System.out.println("To log out write logout");
+                        if(role.toString().equals(Session.CLIENT.toString())) {
+                            System.out.println("1. To get a weather in a city type 'weather'");
+                            System.out.println("2. To log out please type 'logout'");
+                        } else if(role.toString().equals(Session.ADMIN.toString())) {
+                            System.out.println("Choose what operation you want: ");
+                            System.out.println("1. Change json dataset");
+                            System.out.println("2. Get all cities");
+                            System.out.println("3. To log out please type 'logout'");
+                        }
                         break;
                 }
                 bufferedWriter.write(role.toString() + ": " + request);

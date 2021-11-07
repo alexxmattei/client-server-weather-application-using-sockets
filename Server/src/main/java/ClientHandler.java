@@ -11,16 +11,16 @@ public class ClientHandler implements Runnable {
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
-    private String clientUsername;
+    private String clientAuthLevel;
 
     public ClientHandler(Socket socket) {
         try {
             this.socket = socket;
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.clientUsername = bufferedReader.readLine();
+            this.clientAuthLevel = bufferedReader.readLine();
             clientHandlers.add(this);
-            broadcastMessage("SERVER: " + clientUsername + " has entered the chat!");
+            broadcastMessage("SERVER: You are now logged in as: " + clientAuthLevel);
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
@@ -38,12 +38,38 @@ public class ClientHandler implements Runnable {
                 System.out.println(messageFromClient);
                 RequestParser requestParser = new RequestParser();
                 Request logRequest = requestParser.parseRequest(messageFromClient);
-                if(!logRequest.getMessage().equals("logout")){
-                    System.out.println("Client with role: " + logRequest.getRole() + " has sent the following request: " + logRequest.getMessage());
-                } else {
-                    System.out.println("Client with role: " + logRequest.getRole() + "has now logged out!");
-                }
+                String clientMessage = logRequest.getMessage();
+                switch (clientMessage) {
+                    case "weather":
+                        int requestOperation = 0;
+                        while (!logRequest.getMessage().equals("quit")) {
+                            if (requestOperation < 2) {
+                                broadcastMessage("Please type in the latitude");
+                                String latitude = bufferedReader.readLine();
+                                Request latitudeRequest = requestParser.parseRequest(latitude);
+                                requestOperation++;
+                                broadcastMessage("Please type in the longitude");
+                                String longitude = bufferedReader.readLine();
+                                Request longitudeRequest = requestParser.parseRequest(longitude);
+                                requestOperation++;
+                                broadcastMessage(latitudeRequest.getMessage() + "and" + longitudeRequest.getMessage());
+                            } else {
+                                broadcastMessage("If you want to quit type 'quit' \n If you want to continue type 'continue'");
+                                String userChoiceInput = bufferedReader.readLine();
+                                Request userChoiceInputRequest = requestParser.parseRequest(userChoiceInput);
+                                logRequest.setMessage(userChoiceInputRequest.getMessage().toLowerCase());
+                                requestOperation = 0;
+                            }
 
+                        }
+                        break;
+                    case "logout":
+                        System.out.println("Client with role: " + logRequest.getRole() + " has now logged out!");
+                        break;
+                    default:
+                        System.out.println("Client with role: " + logRequest.getRole() + " has sent the following request: " + logRequest.getMessage());
+                        break;
+                }
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
                 break;
@@ -65,7 +91,7 @@ public class ClientHandler implements Runnable {
 
     public void removeClientHandler() {
         clientHandlers.remove(this);
-        broadcastMessage("SERVER: " + clientUsername + " has disconnected!");
+        broadcastMessage("SERVER: " + clientAuthLevel + " has disconnected!");
     }
 
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
@@ -77,10 +103,10 @@ public class ClientHandler implements Runnable {
             if (bufferedWriter != null) {
                 bufferedWriter.close();
             }
-            if(socket != null) {
+            if (socket != null) {
                 socket.close();
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
