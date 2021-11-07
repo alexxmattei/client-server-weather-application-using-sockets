@@ -38,7 +38,12 @@ public class ClientHandler implements Runnable {
                 System.out.println(messageFromClient);
                 RequestParser requestParser = new RequestParser();
                 Request logRequest = requestParser.parseRequest(messageFromClient);
-                System.out.println("Client with role: " + logRequest.getRole() + " has sent the following request: " + logRequest.getMessage());
+                if(!logRequest.getMessage().equals("logout")){
+                    System.out.println("Client with role: " + logRequest.getRole() + " has sent the following request: " + logRequest.getMessage());
+                } else {
+                    System.out.println("Client with role: " + logRequest.getRole() + "has now logged out!");
+                }
+
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
                 break;

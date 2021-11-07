@@ -70,11 +70,12 @@ public class Client {
                 String request = scanner.nextLine();
                 switch (request) {
                     case "logout":
+                        AuthManager.getInstance().setUserCredentials(Session.NONE);
                         System.out.println("Logged out!");
-                        break;
+                        return;
                     case "close":
                         System.out.println("Application closed successfully!");
-                        appLifetimeManager.setIsApplicationRunning(false);
+                        ApplicationLifetimeManager.setIsApplicationRunning(false);
                         closeEverything(socket, bufferedReader, bufferedWriter);
                         break;
                     default:

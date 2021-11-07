@@ -7,7 +7,12 @@ public class RequestParser {
     public Request parseRequest(String requestPacket) {
         String[] responseComponents = requestPacket.split(":");
         Session clientRole = Session.valueOf(responseComponents[0]);
-        String clientPayload = responseComponents[1].trim();
+        String clientPayload = "";
+        if(responseComponents.length > 1) {
+            clientPayload = responseComponents[1].trim();
+        } else {
+            clientPayload = "login request";
+        }
 
         return new Request(clientRole, clientPayload);
     }

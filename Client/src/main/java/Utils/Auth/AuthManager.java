@@ -1,11 +1,11 @@
 package Utils.Auth;
 
-import Utils.Cookie;
+import Utils.Session;
 
 // Thread safe AuthManager implementation
 public class AuthManager {
 
-    private static Cookie userCredentials = null;
+    private static Session userCredentials = null;
     private static AuthManager authManagerInstance = null;
 
     public static AuthManager getInstance() {
@@ -16,14 +16,14 @@ public class AuthManager {
     }
 
     private AuthManager() {
-        this.setUserCredentials(Cookie.STATELESS);
+        this.setUserCredentials(Session.NONE);
     }
 
-    public void setUserCredentials(Cookie userCredentials) {
+    public void setUserCredentials(Session userCredentials) {
         this.userCredentials = userCredentials;
     }
 
-    public Cookie getUserCredentials() {
+    public Session getUserCredentials() {
         return userCredentials;
     }
 }
