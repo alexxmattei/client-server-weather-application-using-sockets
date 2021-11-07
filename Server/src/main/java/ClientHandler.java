@@ -1,5 +1,7 @@
+import Models.WeatherForecast;
 import Utils.Parser.RequestParser;
 import Utils.Request.Request;
+import Utils.Weather.WeatherManager;
 
 import java.io.*;
 import java.net.Socket;
@@ -52,7 +54,10 @@ public class ClientHandler implements Runnable {
                                 String longitude = bufferedReader.readLine();
                                 Request longitudeRequest = requestParser.parseRequest(longitude);
                                 requestOperation++;
-                                broadcastMessage(latitudeRequest.getMessage() + "and" + longitudeRequest.getMessage());
+                                Double clientRequestLatitude = Double.parseDouble(latitudeRequest.getMessage());
+                                Double clientRequestLongitude = Double.parseDouble(longitudeRequest.getMessage());
+                                WeatherForecast resultCity = WeatherManager.calculateClosestCity(clientRequestLatitude, clientRequestLongitude);
+                                broadcastMessage("Weather in "+ resultCity.getCity() + " is " + resultCity.getTemperature().toString() + " degrees!");
                             } else {
                                 broadcastMessage("If you want to quit type 'quit' \n If you want to continue type 'continue'");
                                 String userChoiceInput = bufferedReader.readLine();
@@ -73,6 +78,8 @@ public class ClientHandler implements Runnable {
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
                 break;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
