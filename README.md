@@ -7,7 +7,7 @@ After the user authenticates, the client decides the flow that he has access to 
 A Cookie and a Session is simulated every time a Client is instanciated.
 
 When the application is first started up, the Client has the role NONE.
-Then the client is asked to authenticate and is give role CLIENT or ADMIN upon request. 
+Then the client is asked to authenticate and is given the role CLIENT or ADMIN upon request. 
 
 A CLIENT can: 
 1. Make requests regarding the weather conditions in a city by providing the coordinates. 
@@ -26,6 +26,7 @@ The admin can quit the JSON file addition by typing 'quit' - this has been added
 
 The Client uses an AuthManager that is thread safe to log in and send stateful data to the Server. 
 The Server allocates a new Thread for each client with keeping a record of each client's state and request. 
+Project completed in 11 commits.
 
 Dependencies: 
 
