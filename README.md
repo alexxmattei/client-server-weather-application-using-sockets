@@ -20,6 +20,10 @@ An ADMIN can:
 3. Log out. 
 4. Close the application. 
 
+The admin can change the JSON file by adding a new one (persistence layer is immutable) in one line. 
+It has been tested by using an online JSON formatter.
+The admin can quit the JSON file addition by typing 'quit' - this has been added as a backup feature.
+
 The Client uses an AuthManager that is thread safe to log in and send stateful data to the Server. 
 The Server allocates a new Thread for each client with keeping a record of each client's state and request. 
 
