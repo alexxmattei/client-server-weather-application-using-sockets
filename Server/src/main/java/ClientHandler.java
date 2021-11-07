@@ -1,11 +1,14 @@
 import Models.WeatherForecast;
+import Utils.Parser.MapJsonToFile;
 import Utils.Parser.RequestParser;
 import Utils.Request.Request;
+import Utils.Session.Session;
 import Utils.Weather.WeatherManager;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 public class ClientHandler implements Runnable {
 
@@ -66,6 +69,24 @@ public class ClientHandler implements Runnable {
                                 requestOperation = 0;
                             }
 
+                        }
+                        break;
+                    case "weather forecast":
+                        if(logRequest.getRole().equals(Session.ADMIN)) {
+                            broadcastMessage("The current data is: \n" + WeatherManager.getAllCitiesResponse());
+                        } else {
+                            broadcastMessage("You do not have permission to access this feature\nThe role you are required to have is 'ADMIN' your current role is: " + logRequest.getRole().toString());
+                        }
+                        break;
+                    case "update":
+                        if(logRequest.getRole().equals(Session.ADMIN)) {
+                            broadcastMessage("Enter the new dataset:");
+                            String clientUpdateInput = bufferedReader.readLine();
+                            Request clientUpdateRequest = requestParser.parseDataUpdateRequest(clientUpdateInput);
+                            MapJsonToFile.mapJsonToFile(clientUpdateRequest.getMessage());
+                            broadcastMessage("Updated records!\n" + clientUpdateRequest.getMessage());
+                        } else {
+                            broadcastMessage("You do not have permission to access this feature\nThe role you are required to have is 'ADMIN' your current role is: " + logRequest.getRole().toString());
                         }
                         break;
                     case "logout":

@@ -16,4 +16,9 @@ public class RequestParser {
 
         return new Request(clientRole, clientPayload);
     }
+
+    public Request parseDataUpdateRequest(String requestPacket) {
+        String[] responseComponents = requestPacket.split("ADMIN: ");
+        return new Request(Session.ADMIN, responseComponents[1]);
+    }
 }

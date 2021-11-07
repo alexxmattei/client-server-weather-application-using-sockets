@@ -28,17 +28,5 @@
     "Latitude": "45.74",
     "Longitude": "21.22",
     "Temperature": "12"
-  },
-  {
-    "City": "Oradea",
-    "Latitude": "47",
-    "Longitude": "21.9",
-    "Temperature": "8"
-  },
-  {
-    "City": "Bacau",
-    "Latitude": "46.55",
-    "Longitude": "26.91",
-    "Temperature": "11"
   }
 ]

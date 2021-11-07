@@ -8,8 +8,6 @@ public class MapJsonToClass {
         String jsonFile = ReadJsonAsString.getJsonDataAsString();
         Gson gsonUtil = new Gson();
 
-        WeatherForecast[] citiesForecast = gsonUtil.fromJson(jsonFile, WeatherForecast[].class);
-
-        return citiesForecast;
+        return gsonUtil.fromJson(jsonFile, WeatherForecast[].class);
     }
 }

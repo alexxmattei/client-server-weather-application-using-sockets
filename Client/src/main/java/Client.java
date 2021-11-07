@@ -1,6 +1,7 @@
 import Utils.Auth.ApplicationLifetimeManager;
 import Utils.Auth.AuthManager;
 import Utils.Cookie;
+import Utils.Menus.GeneralMenu;
 import Utils.Status;
 import Utils.Session;
 
@@ -35,16 +36,12 @@ public class Client {
             this.role = validateAuthorization(role);
 
             if (this.role.toString().equals("NONE")) {
-                System.out.println("Please make sure that the role you have chosen matches the options above!");
+                GeneralMenu.displayIncorrectMessagePrompt();
             } else {
                 if (this.role == Session.CLIENT) {
-                    System.out.println("1. To get a weather in a city type 'weather'");
-                    System.out.println("2. To log out please type 'logout'");
+                    GeneralMenu.displayClientOptions();
                 } else if (this.role == Session.ADMIN) {
-                    System.out.println("Choose what operation you want: ");
-                    System.out.println("1. Change json dataset");
-                    System.out.println("2. Get all cities");
-                    System.out.println("3. To log out please type 'logout'");
+                    GeneralMenu.displayAdminOptions();
                 }
             }
         } catch (IOException e) {
@@ -68,26 +65,22 @@ public class Client {
                 String request = scanner.nextLine();
                 switch (request.toLowerCase()) {
                     case "weather":
-                        System.out.println("To make a request for weather please type in the coordinates");
+                        GeneralMenu.displayWeatherPrompt();
                         break;
                     case "logout":
                         AuthManager.getInstance().setUserCredentials(Session.NONE);
-                        System.out.println("Logged out!");
+                        GeneralMenu.displayLogoutPrompt();
                         return;
                     case "close":
-                        System.out.println("Application closed successfully!");
+                        GeneralMenu.displayApplicationOnClosePrompt();
                         ApplicationLifetimeManager.setIsApplicationRunning(false);
                         closeEverything(socket, bufferedReader, bufferedWriter);
                         break;
                     default:
-                        if(role.toString().equals(Session.CLIENT.toString())) {
-                            System.out.println("1. To get a weather in a city type 'weather'");
-                            System.out.println("2. To log out please type 'logout'");
-                        } else if(role.toString().equals(Session.ADMIN.toString())) {
-                            System.out.println("Choose what operation you want: ");
-                            System.out.println("1. Change json dataset");
-                            System.out.println("2. Get all cities");
-                            System.out.println("3. To log out please type 'logout'");
+                        if (role.toString().equals(Session.CLIENT.toString())) {
+                            GeneralMenu.displayClientOptions();
+                        } else if (role.toString().equals(Session.ADMIN.toString())) {
+                            GeneralMenu.displayAdminOptions();
                         }
                         break;
                 }
@@ -111,7 +104,7 @@ public class Client {
                 while (socket.isConnected()) {
                     try {
                         messageFromServer = bufferedReader.readLine();
-                        System.out.println("Response from your request: " + messageFromServer);
+                        System.out.println(messageFromServer);
                     } catch (IOException e) {
                         closeEverything(socket, bufferedReader, bufferedWriter);
                     }

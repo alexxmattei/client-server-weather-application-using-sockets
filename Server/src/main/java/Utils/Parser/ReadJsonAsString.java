@@ -7,8 +7,7 @@ public class ReadJsonAsString {
 
     public static String getJsonDataAsString() throws Exception {
         String filePath = "src/main/java/Persistence/weatherForecast.json";
-        String result = readJSONFileAsString(filePath);
-        return result;
+        return readJSONFileAsString(filePath);
     }
 
     public static String readJSONFileAsString(String filePath) throws Exception {

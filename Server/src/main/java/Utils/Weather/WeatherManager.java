@@ -2,6 +2,7 @@ package Utils.Weather;
 
 import Models.WeatherForecast;
 import Utils.Parser.MapJsonToClass;
+import Utils.Parser.ReadJsonAsString;
 
 import java.lang.Math;
 
@@ -24,5 +25,10 @@ public class WeatherManager {
     public static WeatherForecast[] getAllCities() throws Exception {
         WeatherForecast[] cities = MapJsonToClass.getJSONAsObject();
         return cities;
+    }
+
+    public static String getAllCitiesResponse() throws Exception {
+        String citiesRecords = ReadJsonAsString.getJsonDataAsString();
+        return citiesRecords;
     }
 }
