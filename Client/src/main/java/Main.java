@@ -2,6 +2,7 @@ import Utils.Auth.ApplicationLifetimeManager;
 import Utils.Auth.AuthManager;
 import Utils.Menus.AuthMenu;
 import Utils.Session;
+import Utils.Validators.LoginValidator;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -20,8 +21,12 @@ public class Main {
             authMenu.displayLoginOptions();
             Scanner scanner = new Scanner(System.in);
             String userChosenRole = scanner.nextLine();
+            while(!LoginValidator.validateLoginAttempt(userChosenRole.toUpperCase())) {
+                System.out.println("There is no such Authorization level as: " + userChosenRole);
+                System.out.println("Please choose between 'admin' and 'client'!");
+                userChosenRole = scanner.nextLine();
+            }
             authManager.setUserCredentials(Session.valueOf(userChosenRole.toUpperCase()));
-            System.out.println(authManager.getUserCredentials());
 
             while (authManager.getUserCredentials() != Session.NONE) {
                 Client client = new Client(socket, userChosenRole);

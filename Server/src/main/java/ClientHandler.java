@@ -4,11 +4,11 @@ import Utils.Parser.RequestParser;
 import Utils.Request.Request;
 import Utils.Session.Session;
 import Utils.Weather.WeatherManager;
+import Validators.CoordinatesValidator;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.stream.Stream;
 
 public class ClientHandler implements Runnable {
 
@@ -25,7 +25,6 @@ public class ClientHandler implements Runnable {
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.clientAuthLevel = bufferedReader.readLine();
             clientHandlers.add(this);
-            broadcastMessage("SERVER: You are now logged in as: " + clientAuthLevel);
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
@@ -34,6 +33,7 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         String messageFromClient;
+        RequestParser requestParser = new RequestParser();
 
         while (socket.isConnected()) {
             try {
@@ -41,7 +41,6 @@ public class ClientHandler implements Runnable {
                 messageFromClient = bufferedReader.readLine();
                 broadcastMessage(messageFromClient);
                 System.out.println(messageFromClient);
-                RequestParser requestParser = new RequestParser();
                 Request logRequest = requestParser.parseRequest(messageFromClient);
                 String clientMessage = logRequest.getMessage();
                 switch (clientMessage) {
@@ -49,20 +48,39 @@ public class ClientHandler implements Runnable {
                         int requestOperation = 0;
                         while (!logRequest.getMessage().equals("quit")) {
                             if (requestOperation < 2) {
+
                                 broadcastMessage("Please type in the latitude");
                                 String latitude = bufferedReader.readLine();
                                 Request latitudeRequest = requestParser.parseRequest(latitude);
+
+                                boolean isOk = CoordinatesValidator.validateLatitude(latitudeRequest.getMessage());
+                                while (!isOk) {
+                                    broadcastMessage("Please make sure that the latitude value is in the range of [-90;90]");
+                                    latitude = bufferedReader.readLine();
+                                    latitudeRequest = requestParser.parseRequest(latitude);
+                                    isOk = CoordinatesValidator.validateLatitude(latitudeRequest.getMessage());
+                                }
                                 requestOperation++;
                                 broadcastMessage("Please type in the longitude");
                                 String longitude = bufferedReader.readLine();
                                 Request longitudeRequest = requestParser.parseRequest(longitude);
+                                isOk = CoordinatesValidator.validateLongitude(longitudeRequest.getMessage());
+                                while(!isOk) {
+                                    broadcastMessage("Please make sure that the longitude value is in the range of [-180;180]");
+                                    longitude = bufferedReader.readLine();
+                                    longitudeRequest = requestParser.parseRequest(longitude);
+                                    isOk = CoordinatesValidator.validateLongitude(longitudeRequest.getMessage());
+                                }
                                 requestOperation++;
+
                                 Double clientRequestLatitude = Double.parseDouble(latitudeRequest.getMessage());
                                 Double clientRequestLongitude = Double.parseDouble(longitudeRequest.getMessage());
                                 WeatherForecast resultCity = WeatherManager.calculateClosestCity(clientRequestLatitude, clientRequestLongitude);
-                                broadcastMessage("Weather in "+ resultCity.getCity() + " is " + resultCity.getTemperature().toString() + " degrees!");
+
+                                broadcastMessage("\nWeather in "+ resultCity.getCity() + " is " + resultCity.getTemperature().toString() + " degrees!\n");
                             } else {
-                                broadcastMessage("If you want to quit type 'quit' \n If you want to continue type 'continue'");
+                                broadcastMessage("If you want to quit type 'quit' \nIf you want to continue type 'continue'");
+
                                 String userChoiceInput = bufferedReader.readLine();
                                 Request userChoiceInputRequest = requestParser.parseRequest(userChoiceInput);
                                 logRequest.setMessage(userChoiceInputRequest.getMessage().toLowerCase());
@@ -80,9 +98,12 @@ public class ClientHandler implements Runnable {
                         break;
                     case "update":
                         if(logRequest.getRole().equals(Session.ADMIN)) {
-                            broadcastMessage("Enter the new dataset:");
+                            broadcastMessage("Enter the new dataset (copy the JSON in one line):");
                             String clientUpdateInput = bufferedReader.readLine();
                             Request clientUpdateRequest = requestParser.parseDataUpdateRequest(clientUpdateInput);
+                            if(clientUpdateRequest.getMessage().equals("quit")) {
+                                return;
+                            }
                             MapJsonToFile.mapJsonToFile(clientUpdateRequest.getMessage());
                             broadcastMessage("Updated records!\n" + clientUpdateRequest.getMessage());
                         } else {
